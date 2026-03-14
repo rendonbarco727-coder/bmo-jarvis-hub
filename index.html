@@ -1,13 +1,79 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><title>BMO JARVIS HUB</title>
-<style>body{background:#0a0a0a;color:#00ffff;font-family:monospace;padding:20px}h1{text-shadow:0 0 10px #00ffff}.m{background:#111;border:1px solid #00ffff;padding:10px;margin:10px 0;border-radius:4px}</style>
+<head>
+<meta charset="UTF-8">
+<title>BMO JARVIS HUB</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; color: #00ffff; font-family: monospace; padding: 20px; }
+  h1 { text-shadow: 0 0 15px #00ffff; margin-bottom: 20px; font-size: 1.8em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+  .card { background: #111; border: 1px solid #00ffff; padding: 15px; border-radius: 8px; }
+  .card h3 { font-size: 0.8em; color: #0af; margin-bottom: 8px; }
+  .card .val { font-size: 1.6em; font-weight: bold; }
+  .status { margin-top: 20px; font-size: 0.8em; color: #0af; }
+  .online { color: #0f0; } .warn { color: #ff0; } .danger { color: #f00; }
+  .bar { background: #222; border-radius: 4px; height: 8px; margin-top: 8px; }
+  .bar-fill { height: 100%; border-radius: 4px; background: #00ffff; transition: width 0.5s; }
+</style>
 </head>
 <body>
 <h1>⚡ BMO JARVIS HUB</h1>
-<div class="m">🖥️ Raspberry Pi 4 — Online</div>
-<div class="m">🤖 BMO Agent v1.0</div>
-<div class="m">📡 Tailscale: 100.81.246.50</div>
-<div class="m" id="t"></div>
-<script>document.getElementById('t').textContent='⏱️ '+new Date().toLocaleString();</script>
-</body></html>
+<div class="grid">
+  <div class="card">
+    <h3>🌡️ TEMPERATURA</h3>
+    <div class="val" id="temp">--</div>
+    <div class="bar"><div class="bar-fill" id="temp-bar" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <h3>🖥️ CPU</h3>
+    <div class="val" id="cpu">--</div>
+    <div class="bar"><div class="bar-fill" id="cpu-bar" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <h3>💾 RAM</h3>
+    <div class="val" id="ram">--</div>
+    <div class="bar"><div class="bar-fill" id="ram-bar" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <h3>💿 DISCO</h3>
+    <div class="val" id="disk">--</div>
+    <div class="bar"><div class="bar-fill" id="disk-bar" style="width:0%"></div></div>
+  </div>
+</div>
+<div class="status">
+  🤖 BMO Agent v1.0 &nbsp;|&nbsp; 📡 Tailscale: 100.81.246.50 &nbsp;|&nbsp;
+  Estado: <span id="estado" class="online">CONECTANDO...</span> &nbsp;|&nbsp;
+  ⏱️ <span id="ts">--</span>
+</div>
+<script>
+const API = 'http://100.81.246.50:3000/api/status';
+async function update() {
+  try {
+    const r = await fetch(API);
+    const d = await r.json();
+    document.getElementById('temp').textContent = d.temp || '--';
+    document.getElementById('cpu').textContent = (d.cpu || '0') + '%';
+    document.getElementById('ram').textContent = d.ram || '--';
+    document.getElementById('disk').textContent = d.disk || '--';
+    document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+    document.getElementById('estado').textContent = '🟢 ONLINE';
+    document.getElementById('estado').className = 'online';
+    const tempN = parseFloat(d.temp) || 0;
+    const cpuN  = parseFloat(d.cpu)  || 0;
+    const ramPct = d.ram ? Math.round(parseInt(d.ram)*100/parseInt(d.ram.split('/')[1])) : 0;
+    const diskN = parseInt(d.disk) || 0;
+    document.getElementById('temp-bar').style.width = Math.min(tempN/85*100,100)+'%';
+    document.getElementById('cpu-bar').style.width  = Math.min(cpuN,100)+'%';
+    document.getElementById('ram-bar').style.width  = ramPct+'%';
+    document.getElementById('disk-bar').style.width = diskN+'%';
+  } catch(e) {
+    document.getElementById('estado').textContent = '🔴 OFFLINE';
+    document.getElementById('estado').className = 'danger';
+  }
+}
+update();
+setInterval(update, 5000);
+</script>
+</body>
+</html>
