@@ -12,7 +12,7 @@
   .card h3 { font-size: 0.8em; color: #0af; margin-bottom: 8px; }
   .card .val { font-size: 1.6em; font-weight: bold; }
   .status { margin-top: 20px; font-size: 0.8em; color: #0af; }
-  .online { color: #0f0; } .warn { color: #ff0; } .danger { color: #f00; }
+  .online { color: #0f0; } .danger { color: #f00; }
   .bar { background: #222; border-radius: 4px; height: 8px; margin-top: 8px; }
   .bar-fill { height: 100%; border-radius: 4px; background: #00ffff; transition: width 0.5s; }
 </style>
@@ -20,60 +20,37 @@
 <body>
 <h1>⚡ BMO JARVIS HUB</h1>
 <div class="grid">
-  <div class="card">
-    <h3>🌡️ TEMPERATURA</h3>
-    <div class="val" id="temp">--</div>
-    <div class="bar"><div class="bar-fill" id="temp-bar" style="width:0%"></div></div>
-  </div>
-  <div class="card">
-    <h3>🖥️ CPU</h3>
-    <div class="val" id="cpu">--</div>
-    <div class="bar"><div class="bar-fill" id="cpu-bar" style="width:0%"></div></div>
-  </div>
-  <div class="card">
-    <h3>💾 RAM</h3>
-    <div class="val" id="ram">--</div>
-    <div class="bar"><div class="bar-fill" id="ram-bar" style="width:0%"></div></div>
-  </div>
-  <div class="card">
-    <h3>💿 DISCO</h3>
-    <div class="val" id="disk">--</div>
-    <div class="bar"><div class="bar-fill" id="disk-bar" style="width:0%"></div></div>
-  </div>
+  <div class="card"><h3>🌡️ TEMPERATURA</h3><div class="val" id="temp">--</div><div class="bar"><div class="bar-fill" id="tb" style="width:0%"></div></div></div>
+  <div class="card"><h3>🖥️ CPU</h3><div class="val" id="cpu">--</div><div class="bar"><div class="bar-fill" id="cb" style="width:0%"></div></div></div>
+  <div class="card"><h3>💾 RAM</h3><div class="val" id="ram">--</div><div class="bar"><div class="bar-fill" id="rb" style="width:0%"></div></div></div>
+  <div class="card"><h3>💿 DISCO</h3><div class="val" id="disk">--</div><div class="bar"><div class="bar-fill" id="db" style="width:0%"></div></div></div>
 </div>
-<div class="status">
-  🤖 BMO Agent v1.0 &nbsp;|&nbsp; 📡 Tailscale: 100.81.246.50 &nbsp;|&nbsp;
-  Estado: <span id="estado" class="online">CONECTANDO...</span> &nbsp;|&nbsp;
-  ⏱️ <span id="ts">--</span>
-</div>
+<div class="status">🤖 BMO v1.0 | Estado: <span id="estado" class="online">CONECTANDO...</span> | ⏱️ <span id="ts">--</span></div>
 <script>
-const API = 'http://100.81.246.50:3000/api/status';
+const API = 'https://ruben-1.tail5c4d3b.ts.net/api/status';
 async function update() {
   try {
-    const r = await fetch(API);
-    const d = await r.json();
-    document.getElementById('temp').textContent = d.temp || '--';
-    document.getElementById('cpu').textContent = (d.cpu || '0') + '%';
-    document.getElementById('ram').textContent = d.ram || '--';
-    document.getElementById('disk').textContent = d.disk || '--';
+    const d = await fetch(API).then(r=>r.json());
+    document.getElementById('temp').textContent = d.temp||'--';
+    document.getElementById('cpu').textContent = (d.cpu||'0')+'%';
+    document.getElementById('ram').textContent = d.ram||'--';
+    document.getElementById('disk').textContent = d.disk||'--';
     document.getElementById('ts').textContent = new Date().toLocaleTimeString();
     document.getElementById('estado').textContent = '🟢 ONLINE';
     document.getElementById('estado').className = 'online';
-    const tempN = parseFloat(d.temp) || 0;
-    const cpuN  = parseFloat(d.cpu)  || 0;
-    const ramPct = d.ram ? Math.round(parseInt(d.ram)*100/parseInt(d.ram.split('/')[1])) : 0;
-    const diskN = parseInt(d.disk) || 0;
-    document.getElementById('temp-bar').style.width = Math.min(tempN/85*100,100)+'%';
-    document.getElementById('cpu-bar').style.width  = Math.min(cpuN,100)+'%';
-    document.getElementById('ram-bar').style.width  = ramPct+'%';
-    document.getElementById('disk-bar').style.width = diskN+'%';
+    const t = parseFloat(d.temp)||0;
+    const c = parseFloat(d.cpu)||0;
+    const [ru,rt] = (d.ram||'0/1').split('/').map(Number);
+    document.getElementById('tb').style.width = Math.min(t/85*100,100)+'%';
+    document.getElementById('cb').style.width = Math.min(c,100)+'%';
+    document.getElementById('rb').style.width = Math.round(ru/rt*100)+'%';
+    document.getElementById('db').style.width = parseInt(d.disk)||0+'%';
   } catch(e) {
     document.getElementById('estado').textContent = '🔴 OFFLINE';
     document.getElementById('estado').className = 'danger';
   }
 }
-update();
-setInterval(update, 5000);
+update(); setInterval(update, 5000);
 </script>
 </body>
 </html>
