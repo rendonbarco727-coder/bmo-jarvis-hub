@@ -2,514 +2,1089 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>BMO JARVIS HUB</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BMO UNIT — OPERATIONAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
+:root {
+  --c: #00e5ff;
+  --c2: #00b8d4;
+  --c3: rgba(0,229,255,.12);
+  --g: #00ff9d;
+  --y: #ffe600;
+  --r: #ff3d5a;
+  --bg: #020b14;
+  --bg2: #041520;
+  --bg3: #051b2c;
+  --line: rgba(0,229,255,.15);
+  --line2: rgba(0,229,255,.06);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#050508;color:#00ffff;font-family:monospace;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-header{padding:10px 20px;border-bottom:1px solid #00ffff22;display:flex;align-items:center;gap:15px;flex-shrink:0}
-h1{text-shadow:0 0 20px #00ffff;font-size:1.2em;letter-spacing:3px}
-.tabs{display:flex;gap:4px;margin-left:auto}
-.tab{padding:5px 12px;border:1px solid #00ffff33;background:transparent;color:#00ffff66;cursor:pointer;border-radius:4px;font-family:monospace;font-size:.78em;transition:all .2s}
-.tab:hover{background:#00ffff11;color:#00ffff}
-.tab.active{background:#00ffff22;border-color:#00ffff;color:#00ffff}
-.panel{display:none;flex:1;overflow:hidden;min-height:0}
-.panel.active{display:flex}
-/* STATUS */
-#p-status{flex-direction:column;padding:15px;gap:12px;overflow-y:auto}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.card{background:#0d0d14;border:1px solid #00ffff22;padding:12px;border-radius:8px}
-.card h3{font-size:.68em;color:#0af;margin-bottom:6px;letter-spacing:1px}
-.card .val{font-size:1.3em;font-weight:bold}
-.bar{background:#111;border-radius:4px;height:5px;margin-top:8px}
-.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#00ffff,#0080ff);transition:width .8s}
-.bar-fill.warn{background:linear-gradient(90deg,#ffff00,#ff8800)}
-.bar-fill.danger{background:linear-gradient(90deg,#ff4444,#ff0000)}
-/* FILES */
-#p-files{gap:0}
-.file-list{width:250px;border-right:1px solid #00ffff15;overflow-y:auto;padding:8px;flex-shrink:0}
-.file-group-title{font-size:.62em;color:#0af;padding:4px 6px;letter-spacing:1px;opacity:.5}
-.file-item{padding:5px 8px;cursor:pointer;border-radius:4px;font-size:.72em;display:flex;justify-content:space-between;gap:4px}
-.file-item:hover{background:#00ffff0d}
-.file-item.active{background:#00ffff1a}
-.sz{color:#0af;font-size:.65em;white-space:nowrap}
-.file-editor{flex:1;display:flex;flex-direction:column}
-.file-toolbar{padding:8px 12px;border-bottom:1px solid #00ffff15;display:flex;gap:6px;align-items:center;flex-shrink:0}
-.btn{padding:4px 10px;border:1px solid #00ffff33;background:transparent;color:#00ffff;cursor:pointer;border-radius:4px;font-family:monospace;font-size:.73em}
-.btn:hover{background:#00ffff15}
-.btn.danger{border-color:#f4444433;color:#f44}
-textarea{flex:1;background:#080810;color:#00ffff;border:none;padding:15px;font-family:monospace;font-size:.77em;resize:none;outline:none;line-height:1.5}
-/* BRAIN */
-#p-brain{flex-direction:column;padding:15px;gap:10px;overflow-y:auto}
-.brain-section h2{font-size:.78em;color:#0af;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #00ffff15;letter-spacing:1px}
-.brain-item{background:#0d0d14;border:1px solid #00ffff1a;padding:7px 11px;margin-bottom:4px;border-radius:5px;font-size:.73em}
-.brain-item.new{border-color:#00ffff88;box-shadow:0 0 8px #00ffff33;animation:fade-border 3s forwards}
-@keyframes fade-border{to{border-color:#00ffff1a;box-shadow:none}}
-.meta{color:#0af;font-size:.67em;margin-bottom:3px;display:flex;gap:6px}
-.badge{padding:1px 5px;border-radius:3px;background:#00ffff15}
-/* VECTOR */
-#p-vector{position:relative}
-#vec-canvas{width:100%;height:100%;cursor:crosshair}
-.side-panel{position:absolute;right:0;top:0;bottom:0;width:220px;background:#05050ccc;border-left:1px solid #00ffff15;display:flex;flex-direction:column;backdrop-filter:blur(4px)}
-.side-title{padding:10px 12px;font-size:.72em;color:#0af;letter-spacing:1px;border-bottom:1px solid #00ffff15}
-.event-feed{flex:1;overflow-y:auto;padding:8px}
-.event-item{padding:5px 8px;margin-bottom:5px;border-radius:4px;font-size:.68em;border-left:2px solid #00ffff44;background:#00ffff05;animation:slide-in .3s ease}
-@keyframes slide-in{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
-.event-item.save{border-left-color:#ff00ff}
-.event-item.search{border-left-color:#00ffff}
-.event-item.task{border-left-color:#00ff88}
-.vec-bottom{position:absolute;bottom:0;left:0;right:220px;background:#05050ccc;border-top:1px solid #00ffff15;padding:6px 12px;font-size:.68em;color:#0af;display:flex;gap:10px;align-items:center}
-.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00ffff;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
-.tooltip{position:absolute;background:#000c;border:1px solid #00ffff44;padding:6px 10px;border-radius:5px;font-size:.7em;pointer-events:none;display:none;max-width:200px;z-index:20}
-.cluster-label{position:absolute;font-size:.65em;color:#ffffff22;letter-spacing:2px;pointer-events:none}
-footer{padding:5px 15px;border-top:1px solid #00ffff15;font-size:.67em;color:#0af;display:flex;gap:15px;flex-shrink:0}
-.online{color:#0f0}.offl{color:#f44}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#00ffff22;border-radius:2px}
+html,body{width:100%;height:100%;overflow:hidden}
+
+body {
+  background: var(--bg);
+  color: var(--c);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  position: relative;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(var(--line2) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line2) 1px,transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;z-index:0;
+}
+body::after {
+  content:'';
+  position:fixed;inset:0;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,60,100,.25) 0%, transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+/* ── SCANLINES ── */
+.scanlines {
+  position:fixed;inset:0;z-index:999;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);
+}
+
+/* ── LAYOUT ── */
+#app {
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-rows: 52px 1fr 32px;
+  height: 100vh;
+  gap:0;
+}
+
+/* ── HEADER ── */
+header {
+  display:flex;align-items:center;gap:12px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(90deg, rgba(0,100,150,.15) 0%, transparent 40%);
+  position:relative;overflow:hidden;
+}
+header::after {
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--c),var(--g),transparent);
+  animation:hline 4s infinite;
+}
+@keyframes hline{0%,100%{opacity:.3}50%{opacity:1}}
+
+.logo {
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;font-size:.95em;letter-spacing:6px;
+  text-shadow: 0 0 20px var(--c), 0 0 40px rgba(0,229,255,.4);
+}
+.logo span{color:var(--g);}
+
+.h-status {
+  display:flex;gap:8px;align-items:center;
+  font-size:.65em;letter-spacing:2px;
+  color:rgba(0,229,255,.5);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+.h-metrics {
+  display:flex;gap:16px;margin-left:auto;font-size:.7em;letter-spacing:1px;
+}
+.hm {display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.hm-label{color:rgba(0,229,255,.4);font-size:.8em;}
+.hm-val{font-family:'Orbitron',sans-serif;font-size:1em;font-weight:700;}
+
+.nav-tabs {
+  display:flex;gap:2px;margin-left:16px;
+}
+.ntab {
+  padding: 4px 14px;
+  background:transparent;
+  border:none;border-bottom:2px solid transparent;
+  color:rgba(0,229,255,.4);
+  font-family:'Rajdhani',sans-serif;font-weight:600;
+  font-size:.72em;letter-spacing:2px;cursor:pointer;
+  transition:.2s;text-transform:uppercase;
+}
+.ntab:hover{color:var(--c);border-bottom-color:rgba(0,229,255,.3);}
+.ntab.active{color:var(--c);border-bottom-color:var(--c);text-shadow:0 0 10px var(--c);}
+
+.voice-btn {
+  padding:3px 10px;
+  border:1px solid rgba(0,229,255,.3);
+  background:transparent;color:var(--c);
+  font-family:'Rajdhani',sans-serif;font-weight:600;
+  font-size:.65em;letter-spacing:2px;cursor:pointer;
+  transition:.2s;
+}
+.voice-btn:hover{background:rgba(0,229,255,.08);}
+.voice-btn.on{border-color:var(--r);color:var(--r);animation:redpulse 1s infinite;}
+@keyframes redpulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 10px var(--r)}}
+
+/* ── MAIN ── */
+main {
+  display:grid;
+  grid-template-columns: 240px 1fr 280px;
+  overflow:hidden;
+}
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+/* BMO 3D Canvas */
+#bmo-stage {
+  height:220px;flex-shrink:0;
+  position:relative;
+  border-bottom:1px solid var(--line);
+  background:radial-gradient(ellipse 80% 80% at 50% 60%, rgba(0,80,120,.2) 0%, transparent 70%);
+}
+#bmo-cv{width:100%;height:100%;}
+.bmo-label {
+  position:absolute;bottom:6px;left:0;right:0;text-align:center;
+  font-family:'Orbitron',sans-serif;font-size:.55em;letter-spacing:4px;
+  color:rgba(0,229,255,.5);
+}
+
+/* File Manager */
+.fm-header {
+  padding:8px 12px;
+  font-size:.62em;letter-spacing:2px;color:rgba(0,229,255,.5);
+  border-bottom:1px solid var(--line2);
+  display:flex;align-items:center;gap:8px;
+}
+.fm-header span{flex:1;}
+.icon-btn{background:none;border:none;color:rgba(0,229,255,.4);cursor:pointer;font-size:1em;padding:2px 4px;transition:.15s;}
+.icon-btn:hover{color:var(--c);}
+
+.file-tree {
+  flex:1;overflow-y:auto;padding:4px;
+}
+.fgroup{margin-bottom:6px;}
+.fgroup-title {
+  font-size:.58em;letter-spacing:2px;color:rgba(0,229,255,.35);
+  padding:3px 8px;border-bottom:1px solid var(--line2);margin-bottom:3px;
+}
+.fitem {
+  display:flex;align-items:center;gap:6px;
+  padding:4px 8px;cursor:pointer;font-size:.7em;
+  border-radius:1px;transition:.1s;
+  border-left:2px solid transparent;
+}
+.fitem:hover{background:rgba(0,229,255,.05);border-left-color:rgba(0,229,255,.3);}
+.fitem.active{background:rgba(0,229,255,.08);border-left-color:var(--c);color:#fff;}
+.fitem-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fitem-size{font-size:.8em;color:rgba(0,229,255,.35);flex-shrink:0;}
+.fitem-icon{flex-shrink:0;opacity:.5;font-size:.9em;}
+
+/* ── CENTER ── */
+.center-panel {
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* Editor toolbar */
+.editor-bar {
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;
+  border-bottom:1px solid var(--line);
+  flex-shrink:0;
+}
+.ebar-path {
+  flex:1;font-size:.68em;color:rgba(0,229,255,.4);
+  font-family:'Share Tech Mono',monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.btn {
+  padding:3px 10px;
+  border:1px solid rgba(0,229,255,.25);
+  background:transparent;color:rgba(0,229,255,.7);
+  font-family:'Rajdhani',sans-serif;font-weight:600;
+  font-size:.65em;letter-spacing:1px;cursor:pointer;transition:.15s;
+}
+.btn:hover{background:rgba(0,229,255,.08);color:var(--c);}
+.btn.g{border-color:rgba(0,255,157,.25);color:rgba(0,255,157,.7);}
+.btn.g:hover{background:rgba(0,255,157,.08);color:var(--g);}
+.btn.r{border-color:rgba(255,61,90,.25);color:rgba(255,61,90,.7);}
+.btn.r:hover{background:rgba(255,61,90,.08);color:var(--r);}
+.btn.y{border-color:rgba(255,230,0,.25);color:rgba(255,230,0,.7);}
+.btn.y:hover{background:rgba(255,230,0,.08);color:var(--y);}
+
+/* Tab system for center */
+.ctabs{display:flex;gap:0;border-bottom:1px solid var(--line);flex-shrink:0;}
+.ctab{
+  padding:5px 14px;font-size:.65em;letter-spacing:1px;
+  border:none;border-right:1px solid var(--line2);
+  background:transparent;color:rgba(0,229,255,.35);
+  cursor:pointer;transition:.15s;font-family:'Rajdhani',sans-serif;font-weight:600;
+}
+.ctab:hover{color:var(--c);background:rgba(0,229,255,.04);}
+.ctab.active{color:var(--c);background:rgba(0,229,255,.06);border-bottom:2px solid var(--c);}
+
+/* Panels */
+.cpanel{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.cpanel.active{display:flex;}
+
+/* FILE EDITOR */
+#p-editor {flex-direction:column;}
+#file-editor-area {
+  flex:1;
+  background:#020c15;
+  color:#a8d8ea;
+  border:none;padding:14px;
+  font-family:'Share Tech Mono',monospace;font-size:.74em;
+  line-height:1.7;resize:none;outline:none;
+}
+#file-editor-area::placeholder{color:rgba(0,229,255,.2);}
+
+/* TERMINAL */
+#p-term {flex-direction:column;}
+#term-out {
+  flex:1;padding:10px 14px;overflow-y:auto;
+  font-family:'Share Tech Mono',monospace;font-size:.73em;line-height:1.8;
+}
+.tline{display:flex;gap:8px;margin-bottom:1px;}
+.ttime{color:rgba(0,229,255,.25);flex-shrink:0;font-size:.85em;}
+.ttext{flex:1;word-break:break-word;}
+.term-input-row{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 14px;border-top:1px solid var(--line);flex-shrink:0;
+}
+.term-prompt{color:var(--g);font-family:'Share Tech Mono',monospace;font-size:.73em;flex-shrink:0;}
+#term-in{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--c);font-family:'Share Tech Mono',monospace;font-size:.73em;
+  caret-color:var(--c);
+}
+
+/* CODE */
+#p-code{flex-direction:column;}
+.code-toolbar{display:flex;gap:5px;padding:5px 10px;border-bottom:1px solid var(--line);flex-shrink:0;flex-wrap:wrap;align-items:center;}
+.csel{
+  background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.2);
+  color:var(--c);padding:3px 8px;
+  font-family:'Rajdhani',sans-serif;font-size:.68em;outline:none;
+}
+.cin{
+  flex:1;min-width:80px;
+  background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.2);
+  color:var(--c);padding:3px 8px;
+  font-family:'Share Tech Mono',monospace;font-size:.68em;outline:none;
+}
+.code-body{flex:1;display:flex;overflow:hidden;}
+#code-in{
+  flex:1;background:#010d16;color:#c5e8f0;
+  border:none;border-right:1px solid var(--line);
+  padding:12px;font-family:'Share Tech Mono',monospace;font-size:.73em;
+  line-height:1.7;resize:none;outline:none;tab-size:2;
+}
+.code-out{width:260px;display:flex;flex-direction:column;}
+.co-title{padding:5px 10px;font-size:.6em;letter-spacing:2px;color:rgba(0,229,255,.4);border-bottom:1px solid var(--line2);}
+#code-out{flex:1;padding:10px;font-family:'Share Tech Mono',monospace;font-size:.7em;overflow-y:auto;white-space:pre-wrap;color:var(--g);}
+
+/* BACKUP */
+#p-backup{flex-direction:column;padding:16px;gap:12px;overflow-y:auto;}
+.backup-card{
+  background:rgba(0,229,255,.03);
+  border:1px solid var(--line);
+  padding:12px 16px;
+}
+.bc-title{font-size:.68em;letter-spacing:2px;color:rgba(0,229,255,.5);margin-bottom:6px;}
+.bc-body{font-size:.78em;line-height:1.8;color:rgba(0,229,255,.7);}
+.backup-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+#backup-log{
+  flex:1;background:rgba(0,0,0,.3);border:1px solid var(--line2);
+  padding:10px;font-family:'Share Tech Mono',monospace;font-size:.68em;
+  overflow-y:auto;line-height:1.8;color:rgba(0,229,255,.6);
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  border-left:1px solid var(--line);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+.rp-section{flex-shrink:0;border-bottom:1px solid var(--line);}
+.rp-title{
+  padding:6px 12px;
+  font-size:.6em;letter-spacing:3px;
+  color:rgba(0,229,255,.4);
+  border-bottom:1px solid var(--line2);
+}
+
+/* Metrics */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;}
+.metric-card{
+  background:rgba(0,229,255,.03);
+  border:1px solid var(--line2);
+  padding:8px 10px;
+  position:relative;overflow:hidden;
+}
+.mc-label{font-size:.55em;letter-spacing:2px;color:rgba(0,229,255,.4);margin-bottom:3px;}
+.mc-val{font-family:'Orbitron',sans-serif;font-size:.9em;font-weight:700;}
+.mc-bar{height:2px;background:rgba(0,229,255,.1);margin-top:5px;overflow:hidden;}
+.mc-fill{height:100%;background:linear-gradient(90deg,var(--c),var(--g));transition:width .8s;}
+.mc-fill.warn{background:linear-gradient(90deg,var(--y),var(--r));}
+.mc-fill.hot{background:linear-gradient(90deg,var(--r),#ff0000);}
+
+/* Activity feed */
+.act-feed{flex:1;overflow-y:auto;padding:6px;}
+.act-item{
+  padding:5px 10px;margin-bottom:3px;
+  border-left:2px solid rgba(0,229,255,.2);
+  background:rgba(0,229,255,.02);
+  font-size:.67em;line-height:1.5;
+  animation:fadein .3s ease;
+}
+@keyframes fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.act-item.ok{border-left-color:var(--g);}
+.act-item.err{border-left-color:var(--r);}
+.act-item.info{border-left-color:var(--c);}
+.act-ts{color:rgba(0,229,255,.3);font-size:.85em;margin-right:6px;}
+
+/* Vector mini */
+#mini-vec{width:100%;height:120px;flex-shrink:0;}
+
+/* ── FOOTER ── */
+footer{
+  display:flex;align-items:center;gap:16px;
+  padding:0 20px;
+  border-top:1px solid var(--line);
+  font-size:.6em;letter-spacing:2px;
+  color:rgba(0,229,255,.35);
+  background:rgba(0,10,20,.5);
+  position:relative;
+}
+footer::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--c2),transparent);
+  opacity:.3;
+}
+.fstat{display:flex;align-items:center;gap:5px;}
+.online{color:var(--g);}
+.offline{color:var(--r);}
+#ws-dot{width:5px;height:5px;border-radius:50%;background:var(--r);}
+#ws-dot.on{background:var(--g);box-shadow:0 0 6px var(--g);}
+
+/* ── SCROLLBARS ── */
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:rgba(0,229,255,.15);}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ── HOLOGRAM EFFECT ── */
+@keyframes holo{
+  0%{filter:drop-shadow(0 0 8px rgba(0,229,255,.6));}
+  50%{filter:drop-shadow(0 0 16px rgba(0,229,255,.9)) drop-shadow(0 0 32px rgba(0,229,255,.3));}
+  100%{filter:drop-shadow(0 0 8px rgba(0,229,255,.6));}
+}
 </style>
 </head>
 <body>
+<div class="scanlines"></div>
+<div id="app">
+
+<!-- HEADER -->
 <header>
-  <h1>⚡ BMO JARVIS HUB</h1>
-  <div class="tabs">
-    <button class="tab active" onclick="showPanel('status',this)">📊 Status</button>
-    <button class="tab" onclick="showPanel('files',this)">📁 Files</button>
-    <button class="tab" onclick="showPanel('brain',this)">🧠 Brain</button>
-    <button class="tab" onclick="showPanel('vector',this)">🔵 Vector</button>
+  <div class="logo">BMO<span>.</span>UNIT</div>
+  <div class="h-status"><div class="dot"></div><span>OPERATIONAL</span></div>
+  <div class="nav-tabs">
+    <button class="ntab active" onclick="switchCtab('editor',this)">FILES</button>
+    <button class="ntab" onclick="switchCtab('term',this)">TERMINAL</button>
+    <button class="ntab" onclick="switchCtab('code',this)">CODE</button>
+    <button class="ntab" onclick="switchCtab('backup',this)">BACKUP</button>
   </div>
+  <div class="h-metrics">
+    <div class="hm"><div class="hm-label">TEMP</div><div class="hm-val" id="h-temp">--</div></div>
+    <div class="hm"><div class="hm-label">CPU</div><div class="hm-val" id="h-cpu">--</div></div>
+    <div class="hm"><div class="hm-label">RAM</div><div class="hm-val" id="h-ram">--</div></div>
+  </div>
+  <button class="voice-btn" id="vbtn" onclick="toggleVoice()">🎤 VOZ</button>
 </header>
 
-<div class="panel active" id="p-status">
-  <div class="grid">
-    <div class="card"><h3>🌡️ TEMP</h3><div class="val" id="temp">--</div><div class="bar"><div class="bar-fill" id="tb" style="width:0%"></div></div></div>
-    <div class="card"><h3>🖥️ CPU</h3><div class="val" id="cpu">--</div><div class="bar"><div class="bar-fill" id="cb" style="width:0%"></div></div></div>
-    <div class="card"><h3>💾 RAM</h3><div class="val" id="ram">--</div><div class="bar"><div class="bar-fill" id="rb" style="width:0%"></div></div></div>
-    <div class="card"><h3>💿 DISCO</h3><div class="val" id="disk">--</div><div class="bar"><div class="bar-fill" id="db" style="width:0%"></div></div></div>
-  </div>
-  <div style="background:#0d0d14;border:1px solid #00ffff1a;border-radius:8px;padding:12px;flex:1;overflow-y:auto">
-    <div style="font-size:.7em;color:#0af;margin-bottom:8px;letter-spacing:1px">⚡ ACTIVIDAD EN TIEMPO REAL</div>
-    <div id="activity-log" style="font-size:.73em;line-height:1.9"></div>
-  </div>
-</div>
+<!-- MAIN -->
+<main>
 
-<div class="panel" id="p-files">
-  <div class="file-list" id="file-list"><div style="padding:10px;font-size:.75em;color:#0af">Cargando...</div></div>
-  <div class="file-editor">
-    <div class="file-toolbar">
-      <span id="file-name" style="flex:1;font-size:.73em;color:#0af66">Selecciona un archivo</span>
-      <button class="btn" onclick="downloadFile()">⬇ Descargar</button>
-      <button class="btn danger" onclick="deleteFile()">🗑 Eliminar</button>
+  <!-- LEFT: BMO + FILE MANAGER -->
+  <div class="left-panel">
+    <div id="bmo-stage">
+      <canvas id="bmo-cv"></canvas>
+      <div class="bmo-label" id="bmo-lbl">IDLE — LISTO</div>
     </div>
-    <textarea id="file-content" placeholder="← Selecciona un archivo para ver su contenido..."></textarea>
-  </div>
-</div>
-
-<div class="panel" id="p-brain">
-  <div class="brain-section"><h2>📚 VAULT DE CONOCIMIENTO</h2><div id="brain-vault">Cargando...</div></div>
-  <div class="brain-section"><h2>🗃️ MEMORIA LONG-TERM</h2><div id="brain-lt">Cargando...</div></div>
-  <div class="brain-section"><h2>✅ HISTORIAL DE TAREAS</h2><div id="brain-tasks">Cargando...</div></div>
-</div>
-
-<div class="panel" id="p-vector">
-  <canvas id="vec-canvas"></canvas>
-  <div class="side-panel">
-    <div class="side-title">⚡ EVENTOS EN VIVO</div>
-    <div class="event-feed" id="event-feed"></div>
-    <div style="padding:8px 12px;border-top:1px solid #00ffff15;font-size:.65em;color:#0af">
-      <div>🔵 Vault: <span id="cnt-vault">0</span></div>
-      <div>🟣 Memoria: <span id="cnt-mem">0</span></div>
-      <div>🟢 Tareas: <span id="cnt-task">0</span></div>
+    <div class="fm-header">
+      <span>📁 ARCHIVOS DEL PROYECTO</span>
+      <button class="icon-btn" onclick="loadFiles()" title="Actualizar">↺</button>
+    </div>
+    <div class="file-tree" id="file-tree">
+      <div style="padding:10px;font-size:.65em;color:rgba(0,229,255,.3)">Cargando...</div>
     </div>
   </div>
-  <div class="vec-bottom">
-    <span class="pulse"></span>
-    <span id="vec-status">Iniciando...</span>
-    <span style="margin-left:auto" id="vec-ts"></span>
-  </div>
-  <div class="tooltip" id="tooltip"></div>
-</div>
 
+  <!-- CENTER: TABBED PANELS -->
+  <div class="center-panel">
+
+    <!-- FILE EDITOR -->
+    <div class="cpanel active" id="p-editor">
+      <div class="editor-bar">
+        <span class="ebar-path" id="epath">← Selecciona un archivo</span>
+        <button class="btn g" onclick="saveFile()">💾 GUARDAR</button>
+        <button class="btn" onclick="downloadFile()">⬇ DESCARGAR</button>
+        <button class="btn r" onclick="deleteFile()">🗑 ELIMINAR</button>
+        <button class="btn y" onclick="newFile()">＋ NUEVO</button>
+      </div>
+      <textarea id="file-editor-area" placeholder="← Selecciona un archivo del panel izquierdo para editar su contenido..."></textarea>
+    </div>
+
+    <!-- TERMINAL -->
+    <div class="cpanel" id="p-term">
+      <div id="term-out">
+        <div class="tline"><span class="ttime">--:--:--</span><span class="ttext" style="color:var(--c)">🤖 BMO Terminal — Escribe cualquier pregunta o comando</span></div>
+        <div class="tline"><span class="ttime">--:--:--</span><span class="ttext" style="color:rgba(0,229,255,.4)">Ejemplos: "estado del sistema", "dime el clima en monterrey", "qué noticias hay"</span></div>
+      </div>
+      <div class="term-input-row">
+        <span class="term-prompt">BMO ❯</span>
+        <input id="term-in" type="text" autocomplete="off" placeholder="escribe aquí..." onkeydown="termKey(event)">
+        <button class="btn g" onclick="sendTerm()">ENVIAR</button>
+        <button class="voice-btn" id="tvbtn" onclick="toggleTermVoice()">🎤</button>
+      </div>
+    </div>
+
+    <!-- CODE -->
+    <div class="cpanel" id="p-code">
+      <div class="code-toolbar">
+        <select class="csel" id="clang">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="bash">Bash</option>
+          <option value="html">HTML</option>
+        </select>
+        <input class="cin" id="cfile" placeholder="archivo.js">
+        <button class="btn g" onclick="runCode()">▶ EJECUTAR</button>
+        <button class="btn" onclick="saveCode()">💾 GUARDAR</button>
+        <button class="btn y" onclick="aiCode()">🤖 IA</button>
+        <button class="btn r" onclick="clearCode()">✕ LIMPIAR</button>
+      </div>
+      <div class="code-body">
+        <textarea id="code-in" spellcheck="false" placeholder="// Escribe tu código aquí..." onkeydown="codeTab(event)"></textarea>
+        <div class="code-out">
+          <div class="co-title">OUTPUT</div>
+          <div id="code-out">Listo...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKUP -->
+    <div class="cpanel" id="p-backup">
+      <div class="backup-card">
+        <div class="bc-title">BACKUP COMPLETO DEL PROYECTO</div>
+        <div class="bc-body">Ruta: <span style="color:var(--c)">/home/ruben/wa-ollama/</span></div>
+        <div class="backup-actions">
+          <button class="btn g" onclick="doBackup('full')">📦 BACKUP COMPLETO</button>
+          <button class="btn" onclick="doBackup('db')">🗄 SOLO DB</button>
+          <button class="btn" onclick="doBackup('config')">⚙ SOLO CONFIG</button>
+          <button class="btn y" onclick="listBackups()">📋 VER BACKUPS</button>
+          <button class="btn r" onclick="cleanTmp()">🧹 LIMPIAR /TMP</button>
+        </div>
+      </div>
+      <div class="backup-card" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <div class="bc-title">LOG DE OPERACIONES</div>
+        <div id="backup-log"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: METRICS + ACTIVITY + MINI VECTOR -->
+  <div class="right-panel">
+
+    <div class="rp-section">
+      <div class="rp-title">MÉTRICAS DEL SISTEMA</div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="mc-label">TEMPERATURA</div>
+          <div class="mc-val" id="m-temp">--</div>
+          <div class="mc-bar"><div class="mc-fill" id="mb-temp" style="width:0%"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="mc-label">CPU LOAD</div>
+          <div class="mc-val" id="m-cpu">--</div>
+          <div class="mc-bar"><div class="mc-fill" id="mb-cpu" style="width:0%"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="mc-label">RAM USADA</div>
+          <div class="mc-val" id="m-ram">--</div>
+          <div class="mc-bar"><div class="mc-fill" id="mb-ram" style="width:0%"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="mc-label">DISCO</div>
+          <div class="mc-val" id="m-disk">--</div>
+          <div class="mc-bar"><div class="mc-fill" id="mb-disk" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rp-section" style="height:120px;position:relative;overflow:hidden;">
+      <div class="rp-title">VECTOR NEURAL</div>
+      <canvas id="mini-vec"></canvas>
+    </div>
+
+    <div class="rp-section" style="flex-shrink:0;">
+      <div class="rp-title">ACTIVIDAD EN VIVO</div>
+    </div>
+    <div class="act-feed" id="act-feed"></div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
 <footer>
-  <span>🤖 BMO v1.0</span>
-  <span>Estado: <span id="estado" class="online">--</span></span>
-  <span>⏱️ <span id="ts">--</span></span>
-  <span style="margin-left:auto">📡 ruben-1.tail5c4d3b.ts.net</span>
+  <div class="fstat">
+    <div id="ws-dot"></div>
+    <span id="fstat">DESCONECTADO</span>
+  </div>
+  <span>⏱ <span id="ftime">--:--:--</span></span>
+  <span>📡 ruben-1.tail5c4d3b.ts.net</span>
+  <span style="margin-left:auto;color:rgba(0,229,255,.2)">BMO JARVIS HUB v2.0</span>
 </footer>
+
+</div>
 
 <script>
 const API = 'https://ruben-1.tail5c4d3b.ts.net';
-let currentFile = null;
-let allPoints = [];
-let animations = []; // animaciones activas
-let prevLtCount = 0;
-let prevVaultCount = 0;
-let prevTaskCount = 0;
-let prevEventTs = 0;
-let vecReady = false;
+let curFile = null;
+let bmoThinking = false;
+let termHistory = [], termIdx = -1;
+let miniVecPts = [], miniVecCtx, miniVecW, miniVecH;
+let speakOn = false;
+let recognition = null, isListening = false;
+let tRecognition = null, tListening = false;
 
-// Clusters: posiciones centrales por tipo
-const CLUSTERS = {
-  vault:  {label:'VAULT',    color:'#00ffff'},
-  memory: {label:'MEMORIA',  color:'#ff00ff'},
-  task:   {label:'TAREAS',   color:'#00ff88'},
-};
-
-function showPanel(name, btn) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('p-'+name).classList.add('active');
+// ── TABS ──────────────────────────────────────────────────
+function switchCtab(id, btn) {
+  document.querySelectorAll('.cpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
   btn.classList.add('active');
-  if (name==='files') loadFiles();
-  if (name==='brain') loadBrain();
-  if (name==='vector') initVector();
+  if(id === 'backup') listBackups();
 }
 
-// STATUS
-async function updateStatus() {
+// ── BMO 3D ────────────────────────────────────────────────
+const bmoCV = document.getElementById('bmo-cv');
+const bmoCtx = bmoCV.getContext('2d');
+let bmoT = 0, bmoOrbit = 0;
+
+function resizeBMO() {
+  const stage = document.getElementById('bmo-stage');
+  bmoCV.width = stage.offsetWidth;
+  bmoCV.height = stage.offsetHeight;
+}
+resizeBMO();
+window.addEventListener('resize', resizeBMO);
+
+function setBMOState(state) {
+  bmoThinking = state === 'thinking';
+  document.getElementById('bmo-lbl').textContent =
+    state === 'thinking' ? 'PROCESANDO...' :
+    state === 'ok' ? 'TAREA COMPLETADA' : 'IDLE — LISTO';
+}
+
+function drawBMO() {
+  const W = bmoCV.width, H = bmoCV.height;
+  bmoCtx.clearRect(0,0,W,H);
+  bmoT += bmoThinking ? .05 : .012;
+  bmoOrbit += .008;
+
+  const cx = W/2, cy = H/2 + 10;
+  const float = Math.sin(bmoT) * 6;
+  const cy2 = cy + float;
+
+  // Glow
+  const glowR = bmoThinking ? .8 + Math.sin(bmoT*3)*.2 : .35;
+  const grd = bmoCtx.createRadialGradient(cx, cy2, 20, cx, cy2, 90);
+  grd.addColorStop(0, `rgba(0,200,255,${glowR*.12})`);
+  grd.addColorStop(1, 'rgba(0,0,0,0)');
+  bmoCtx.beginPath(); bmoCtx.arc(cx,cy2,90,0,Math.PI*2);
+  bmoCtx.fillStyle = grd; bmoCtx.fill();
+
+  // Shadow on ground
+  bmoCtx.save();
+  bmoCtx.translate(cx, cy2+62);
+  bmoCtx.scale(1, .25);
+  bmoCtx.beginPath(); bmoCtx.arc(0,0,38,0,Math.PI*2);
+  bmoCtx.fillStyle = `rgba(0,150,220,${.1+Math.sin(bmoT)*.03})`;
+  bmoCtx.fill(); bmoCtx.restore();
+
+  // Orbital rings
+  for(let i=0;i<2;i++){
+    const ra = 55+i*20;
+    const ang = bmoOrbit*(i%2===0?1:-1)+i*1.5;
+    bmoCtx.save();
+    bmoCtx.translate(cx,cy2);
+    bmoCtx.rotate(ang*1.2);
+    bmoCtx.scale(1,.28);
+    bmoCtx.beginPath(); bmoCtx.arc(0,0,ra,0,Math.PI*2);
+    bmoCtx.strokeStyle=`rgba(0,229,255,${.08+glowR*.06})`;
+    bmoCtx.lineWidth=1; bmoCtx.stroke();
+    bmoCtx.restore();
+    // dot on ring
+    bmoCtx.beginPath();
+    bmoCtx.arc(cx+Math.cos(ang)*ra, cy2+Math.sin(ang)*ra*.28, 2.5,0,Math.PI*2);
+    bmoCtx.fillStyle=`rgba(0,229,255,${.5+glowR*.3})`; bmoCtx.fill();
+  }
+
+  // BMO body — side face (perspective)
+  const bw=68, bh=84, bx=cx-bw/2, by=cy2-bh/2;
+  const dp=10;
+
+  bmoCtx.fillStyle='rgba(0,40,80,.85)';
+  bmoCtx.beginPath();
+  bmoCtx.moveTo(bx+bw,by); bmoCtx.lineTo(bx+bw+dp,by-dp*.5);
+  bmoCtx.lineTo(bx+bw+dp,by+bh-dp*.5); bmoCtx.lineTo(bx+bw,by+bh);
+  bmoCtx.closePath(); bmoCtx.fill();
+
+  bmoCtx.fillStyle='rgba(0,55,100,.7)';
+  bmoCtx.beginPath();
+  bmoCtx.moveTo(bx,by); bmoCtx.lineTo(bx+bw,by);
+  bmoCtx.lineTo(bx+bw+dp,by-dp*.5); bmoCtx.lineTo(bx+dp,by-dp*.5);
+  bmoCtx.closePath(); bmoCtx.fill();
+
+  // Body front
+  bmoCtx.fillStyle='rgba(0,70,140,.9)';
+  bmoCtx.fillRect(bx,by,bw,bh);
+
+  // Border glow
+  bmoCtx.strokeStyle=`rgba(0,229,255,${glowR})`;
+  bmoCtx.lineWidth=1.2; bmoCtx.strokeRect(bx,by,bw,bh);
+
+  // Screen
+  const sw=46, sh=32, sx=cx-sw/2, sy=cy2-sh/2-8;
+  bmoCtx.fillStyle='rgba(0,8,20,.95)';
+  bmoCtx.fillRect(sx,sy,sw,sh);
+  bmoCtx.strokeStyle=`rgba(0,229,255,${glowR*.6})`;
+  bmoCtx.lineWidth=.8; bmoCtx.strokeRect(sx,sy,sw,sh);
+
+  // Eyes
+  const ey = sy+sh*.35;
+  [[sx+sw*.28,ey],[sx+sw*.72,ey]].forEach(([ex,ey2])=>{
+    const ec = bmoThinking ? `rgba(255,230,0,.9)` : `rgba(0,255,150,.8)`;
+    bmoCtx.beginPath(); bmoCtx.arc(ex,ey2,3.5,0,Math.PI*2);
+    bmoCtx.fillStyle=ec; bmoCtx.fill();
+    bmoCtx.beginPath(); bmoCtx.arc(ex,ey2,6,0,Math.PI*2);
+    bmoCtx.fillStyle=ec.replace(/[\d.]+\)$/,'.08)'); bmoCtx.fill();
+  });
+
+  // Mouth
+  const my = sy+sh*.72;
+  if(bmoThinking){
+    bmoCtx.beginPath(); bmoCtx.moveTo(sx+5,my);
+    for(let i=0;i<=sw-10;i++) bmoCtx.lineTo(sx+5+i, my+Math.sin(i*.3+bmoT*4)*2.5);
+    bmoCtx.strokeStyle='rgba(255,230,0,.7)'; bmoCtx.lineWidth=1.5; bmoCtx.stroke();
+  } else {
+    const smileAmt = .8+Math.sin(bmoT*.5)*.2;
+    bmoCtx.beginPath();
+    bmoCtx.arc(cx, my+2, 12*smileAmt, .15*Math.PI, .85*Math.PI);
+    bmoCtx.strokeStyle='rgba(0,255,150,.6)'; bmoCtx.lineWidth=1.5; bmoCtx.stroke();
+  }
+
+  // Side buttons
+  [[bx+7,cy2-16,'#ff3d5a'],[bx+7,cy2,'#ffe600'],[bx+7,cy2+16,'#00ff9d']].forEach(([bx2,by2,col])=>{
+    bmoCtx.beginPath(); bmoCtx.arc(bx2,by2,3,0,Math.PI*2);
+    bmoCtx.fillStyle=col; bmoCtx.fill();
+  });
+
+  // D-pad
+  bmoCtx.fillStyle=`rgba(0,150,200,.5)`;
+  [[cx+14,cy2+20,16,5],[cx+14,cy2+20,5,16]].forEach(([x,y,w,h])=>{
+    bmoCtx.fillRect(x-w/2,y-h/2,w,h);
+  });
+
+  // Logo BMO on body
+  bmoCtx.font=`700 9px Orbitron,monospace`;
+  bmoCtx.fillStyle=`rgba(0,229,255,${glowR*.6})`;
+  bmoCtx.textAlign='center';
+  bmoCtx.fillText('BMO',cx,by+bh-8);
+  bmoCtx.textAlign='left';
+
+  // Antennas
+  [[cx-18,by],[cx+18,by]].forEach(([ax,ay],i)=>{
+    bmoCtx.strokeStyle=`rgba(0,200,255,${glowR*.7})`;
+    bmoCtx.lineWidth=1.5;
+    bmoCtx.beginPath(); bmoCtx.moveTo(ax,ay); bmoCtx.lineTo(ax+(i===0?-6:6),ay-20); bmoCtx.stroke();
+    bmoCtx.beginPath(); bmoCtx.arc(ax+(i===0?-6:6),ay-24,3,0,Math.PI*2);
+    bmoCtx.fillStyle=bmoThinking?'#ffe600':'rgba(0,229,255,.7)'; bmoCtx.fill();
+  });
+
+  // Holographic data lines (thinking mode)
+  if(bmoThinking){
+    for(let i=0;i<3;i++){
+      const lx = bx-20+i*5, ly = by-30-i*15;
+      const lw = 20+i*8;
+      bmoCtx.fillStyle=`rgba(0,229,255,${.15-i*.04})`;
+      bmoCtx.fillRect(lx,ly,lw,1.5);
+    }
+  }
+
+  requestAnimationFrame(drawBMO);
+}
+drawBMO();
+
+// ── MINI VECTOR ───────────────────────────────────────────
+function initMiniVec() {
+  const canvas = document.getElementById('mini-vec');
+  const parent = canvas.parentElement;
+  miniVecW = canvas.width = parent.offsetWidth;
+  miniVecH = canvas.height = parent.offsetHeight - 22;
+  miniVecCtx = canvas.getContext('2d');
+  miniVecPts = Array.from({length:40},()=>({
+    x:Math.random()*miniVecW, y:Math.random()*miniVecH,
+    vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+    r:1+Math.random()*1.5,
+    type:['v','m','t'][Math.floor(Math.random()*3)]
+  }));
+  miniVecLoop();
+}
+const MCOLS={v:'#00e5ff',m:'#ff00ff',t:'#00ff9d'};
+function miniVecLoop(){
+  requestAnimationFrame(miniVecLoop);
+  miniVecCtx.fillStyle='rgba(2,11,20,0.25)';
+  miniVecCtx.fillRect(0,0,miniVecW,miniVecH);
+  miniVecPts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>miniVecW)p.vx*=-1;
+    if(p.y<0||p.y>miniVecH)p.vy*=-1;
+  });
+  for(let i=0;i<miniVecPts.length;i++){
+    for(let j=i+1;j<miniVecPts.length;j++){
+      const d=Math.hypot(miniVecPts[i].x-miniVecPts[j].x,miniVecPts[i].y-miniVecPts[j].y);
+      if(d<50){
+        miniVecCtx.strokeStyle=MCOLS[miniVecPts[i].type]+Math.floor((1-d/50)*20).toString(16).padStart(2,'0');
+        miniVecCtx.lineWidth=.5; miniVecCtx.beginPath();
+        miniVecCtx.moveTo(miniVecPts[i].x,miniVecPts[i].y);
+        miniVecCtx.lineTo(miniVecPts[j].x,miniVecPts[j].y); miniVecCtx.stroke();
+      }
+    }
+  }
+  miniVecPts.forEach(p=>{
+    miniVecCtx.beginPath(); miniVecCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    miniVecCtx.fillStyle=MCOLS[p.type]; miniVecCtx.fill();
+  });
+}
+setTimeout(initMiniVec, 300);
+
+// ── STATUS ────────────────────────────────────────────────
+async function fetchStatus() {
   try {
     const d = await fetch(API+'/api/status').then(r=>r.json());
-    document.getElementById('temp').textContent = d.temp||'--';
-    document.getElementById('cpu').textContent = (d.cpu||'0')+'%';
-    document.getElementById('ram').textContent = d.ram||'--';
-    document.getElementById('disk').textContent = d.disk||'--';
-    document.getElementById('ts').textContent = new Date().toLocaleTimeString();
-    document.getElementById('estado').textContent = '🟢 ONLINE';
-    document.getElementById('estado').className = 'online';
-    const t=parseFloat(d.temp)||0, cpu=parseFloat(d.cpu)||0;
+    const temp = d.temp||'--', cpu = (d.cpu||'0')+'%', ram = d.ram||'--', disk = d.disk||'--';
+    document.getElementById('h-temp').textContent = temp;
+    document.getElementById('h-cpu').textContent = cpu;
+    document.getElementById('h-ram').textContent = ram;
+    document.getElementById('m-temp').textContent = temp;
+    document.getElementById('m-cpu').textContent = cpu;
+    document.getElementById('m-ram').textContent = ram;
+    document.getElementById('m-disk').textContent = disk;
+    document.getElementById('ftime').textContent = new Date().toLocaleTimeString();
     const [ru,rt]=(d.ram||'0/1').split('/').map(Number);
-    setBar('tb',t/85*100,t>70?'danger':t>60?'warn':'');
-    setBar('cb',cpu,cpu>80?'danger':cpu>60?'warn':'');
-    setBar('rb',ru/rt*100,ru/rt>.85?'danger':ru/rt>.7?'warn':'');
-    setBar('db',parseInt(d.disk)||0,(parseInt(d.disk)||0)>85?'danger':'');
+    const t=parseFloat(d.temp)||0, c=parseFloat(d.cpu)||0;
+    setBar('mb-temp',t/85*100,t>70?'hot':t>60?'warn':'');
+    setBar('mb-cpu',c,c>80?'hot':c>60?'warn':'');
+    setBar('mb-ram',ru/rt*100,'');
+    setBar('mb-disk',parseInt(d.disk)||0,'');
+    document.getElementById('fstat').textContent = '🟢 ONLINE';
+    document.getElementById('fstat').className = 'online';
   } catch(e) {
-    document.getElementById('estado').textContent='🔴 OFFLINE';
-    document.getElementById('estado').className='offl';
+    document.getElementById('fstat').textContent = '🔴 OFFLINE';
+    document.getElementById('fstat').className = 'offline';
   }
 }
 
-function setBar(id,pct,cls) {
-  const el=document.getElementById(id);
-  el.style.width=Math.min(Math.max(pct,0),100)+'%';
-  el.className='bar-fill'+(cls?' '+cls:'');
+function setBar(id, pct, cls) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.width = Math.min(Math.max(pct,0),100)+'%';
+  el.className = 'mc-fill' + (cls?' '+cls:'');
 }
 
-async function updateActivity() {
+// ── ACTIVITY ──────────────────────────────────────────────
+let lastEvTs = 0;
+async function fetchActivity() {
   try {
     const d = await fetch(API+'/api/events').then(r=>r.json());
-    const log = document.getElementById('activity-log');
+    const feed = document.getElementById('act-feed');
     const items = [
-      ...(d.recent||[]).map(r=>({ts:r.timestamp,text:`[${r.tipo}] ${String(r.contenido||'').slice(0,90)}`,color:'#00ffff88'})),
-      ...(d.tasks||[]).map(t=>({ts:t.timestamp,text:`${t.exito?'✅':'❌'} ${String(t.objetivo||'').slice(0,90)}`,color:t.exito?'#00ff8888':'#ff444488'}))
-    ].sort((a,b)=>b.ts-a.ts).slice(0,12);
-    log.innerHTML = items.map(i=>`<div style="color:${i.color};border-left:2px solid ${i.color};padding-left:8px;margin-bottom:3px">${i.text}</div>`).join('');
-  } catch(e) {}
+      ...(d.recent||[]).map(r=>({ts:r.timestamp,text:`[${r.tipo}] ${String(r.contenido||'').slice(0,70)}`,cls:'info'})),
+      ...(d.tasks||[]).map(t=>({ts:t.timestamp,text:`${t.exito?'✅':'❌'} ${String(t.objetivo||'').slice(0,70)}`,cls:t.exito?'ok':'err'}))
+    ].sort((a,b)=>b.ts-a.ts).slice(0,18);
+    feed.innerHTML = items.map(i=>`<div class="act-item ${i.cls}"><span class="act-ts">${new Date(i.ts).toLocaleTimeString()}</span>${i.text}</div>`).join('');
+  } catch(e){}
 }
 
-// FILES
+// ── FILE MANAGER ──────────────────────────────────────────
 async function loadFiles() {
-  const list = document.getElementById('file-list');
+  const tree = document.getElementById('file-tree');
   const files = await fetch(API+'/api/files').then(r=>r.json()).catch(()=>[]);
   const groups = {};
-  files.forEach(f=>{const d=f.path.includes('/')?f.path.split('/')[0]:'raíz';if(!groups[d])groups[d]=[];groups[d].push(f);});
-  list.innerHTML = Object.entries(groups).map(([dir,fs])=>`
-    <div style="margin-bottom:6px">
-      <div class="file-group-title">📁 ${dir}</div>
-      ${fs.map(f=>`<div class="file-item" onclick="openFile('${f.path}',this)"><span>${f.path.split('/').pop()}</span><span class="sz">${(f.size/1024).toFixed(1)}k</span></div>`).join('')}
+  files.forEach(f=>{
+    const parts = f.path.split('/');
+    const dir = parts.length > 1 ? parts[0] : 'raíz';
+    if(!groups[dir]) groups[dir]=[];
+    groups[dir].push(f);
+  });
+  const ext2icon = {js:'📜',py:'🐍',json:'📋',md:'📄',html:'🌐',css:'🎨',sh:'⚙',sql:'🗄',txt:'📝'};
+  tree.innerHTML = Object.entries(groups).map(([dir,fs])=>`
+    <div class="fgroup">
+      <div class="fgroup-title">📁 ${dir.toUpperCase()}</div>
+      ${fs.map(f=>{
+        const name=f.path.split('/').pop();
+        const ext=name.split('.').pop();
+        const icon=ext2icon[ext]||'📄';
+        return `<div class="fitem" onclick="openFile('${f.path}',this)">
+          <span class="fitem-icon">${icon}</span>
+          <span class="fitem-name">${name}</span>
+          <span class="fitem-size">${(f.size/1024).toFixed(1)}k</span>
+        </div>`;
+      }).join('')}
     </div>`).join('');
 }
 
-async function openFile(path,el) {
-  document.querySelectorAll('.file-item').forEach(i=>i.classList.remove('active'));
+async function openFile(path, el) {
+  document.querySelectorAll('.fitem').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
-  currentFile=path;
-  document.getElementById('file-name').textContent=path;
-  document.getElementById('file-content').value='Cargando...';
-  const content=await fetch(API+'/api/file/read?path='+encodeURIComponent(path)).then(r=>r.text()).catch(()=>'Error');
-  document.getElementById('file-content').value=content;
+  curFile = path;
+  document.getElementById('epath').textContent = path;
+  document.getElementById('file-editor-area').value = 'Cargando...';
+  // Switch to editor
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-editor').classList.add('active');
+  document.querySelector('.ntab').classList.add('active');
+  const content = await fetch(API+'/api/file/read?path='+encodeURIComponent(path)).then(r=>r.text()).catch(()=>'Error al cargar');
+  document.getElementById('file-editor-area').value = content;
 }
 
-function downloadFile(){
-  if(!currentFile)return;
-  const blob=new Blob([document.getElementById('file-content').value],{type:'text/plain'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=currentFile.split('/').pop();a.click();
-}
-function deleteFile(){
-  if(!currentFile||!confirm('¿Eliminar '+currentFile+'?'))return;
-  fetch(API+'/api/file/delete?path='+encodeURIComponent(currentFile),{method:'DELETE'}).then(()=>{currentFile=null;loadFiles();document.getElementById('file-content').value='';document.getElementById('file-name').textContent='Selecciona un archivo';});
-}
-
-// BRAIN
-async function loadBrain(silent=false) {
-  const [vault,mem]=await Promise.all([
-    fetch(API+'/api/brain').then(r=>r.json()).catch(()=>[]),
-    fetch(API+'/api/memory').then(r=>r.json()).catch(()=>({}))
-  ]);
-  if(!silent){
-    const fmt=(arr,fn)=>arr.length?arr.map(fn).join(''):'<div class="brain-item" style="opacity:.4">Vacío</div>';
-    document.getElementById('brain-vault').innerHTML=fmt(vault,(v,i)=>`<div class="brain-item${i===0&&prevVaultCount>0&&vault.length>prevVaultCount?' new':''}"><div class="meta"><span class="badge">📄 ${v.source}</span><span>${new Date(v.timestamp).toLocaleString()}</span></div>${v.content.slice(0,150)}</div>`);
-    document.getElementById('brain-lt').innerHTML=fmt(mem.long_term||[],(m,i)=>`<div class="brain-item${i===0&&prevLtCount>0&&(mem.long_term||[]).length>prevLtCount?' new':''}"><div class="meta"><span class="badge">${m.tipo}</span><span>${new Date(m.timestamp).toLocaleString()}</span></div>${String(m.contenido||'').slice(0,120)}</div>`);
-    document.getElementById('brain-tasks').innerHTML=fmt(mem.tasks||[],(t,i)=>`<div class="brain-item${i===0&&prevTaskCount>0&&(mem.tasks||[]).length>prevTaskCount?' new':''}"><div class="meta"><span class="badge">${t.exito?'✅':'❌'}</span><span>${new Date(t.timestamp).toLocaleString()}</span></div>${String(t.objetivo||'').slice(0,100)}</div>`);
-  }
-  prevVaultCount=vault.length; prevLtCount=(mem.long_term||[]).length; prevTaskCount=(mem.tasks||[]).length;
-  return {vault,mem};
-}
-
-// VECTOR
-let ctx, W, H;
-const clusterPos = {};
-
-async function initVector(){
-  if(vecReady) return;
-  const canvas=document.getElementById('vec-canvas');
-  W=canvas.offsetWidth; H=canvas.offsetHeight;
-  canvas.width=W; canvas.height=H;
-  ctx=canvas.getContext('2d');
-
-  // Posiciones de clusters
-  clusterPos.vault  = {x:W*0.25, y:H*0.3};
-  clusterPos.memory = {x:W*0.6,  y:H*0.55};
-  clusterPos.task   = {x:W*0.35, y:H*0.72};
-
-  const {vault,mem} = await loadBrain(true);
-  prevEventTs = await getLatestTs();
-
-  buildPoints(vault, mem);
-  setupTooltip(canvas);
-  vecReady=true;
-  requestAnimationFrame(drawLoop);
-}
-
-async function getLatestTs(){
-  try{
-    const d=await fetch(API+'/api/events').then(r=>r.json());
-    return d.recent?.length ? Math.max(...d.recent.map(r=>r.timestamp)) : 0;
-  }catch(e){return 0;}
-}
-
-function buildPoints(vault,mem){
-  allPoints=[];
-  const add=(items,type,getLabel,getContent)=>items.forEach((item,i)=>{
-    const cp=clusterPos[type]||{x:W/2,y:H/2};
-    const angle=Math.random()*Math.PI*2;
-    const r=20+Math.random()*80;
-    allPoints.push({
-      x:cp.x+Math.cos(angle)*r, y:cp.y+Math.sin(angle)*r,
-      tx:cp.x+Math.cos(angle)*r, ty:cp.y+Math.sin(angle)*r,
-      vx:(Math.random()-.5)*.15, vy:(Math.random()-.5)*.15,
-      type, label:getLabel(item), content:getContent(item),
-      r:4+Math.min(String(getContent(item)||'').length/80,5),
-      glow:0, isNew:false
+async function saveFile() {
+  if(!curFile) { alert('Selecciona un archivo primero'); return; }
+  const content = document.getElementById('file-editor-area').value;
+  try {
+    await fetch(API+'/api/file/write', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path: curFile, content})
     });
-  });
-  add(vault,'vault',v=>v.source,v=>v.content);
-  add(mem.long_term||[],'memory',m=>m.tipo,m=>m.contenido);
-  add(mem.tasks||[],'task',t=>t.exito?'✅':'❌',t=>t.objetivo);
-  updateCounts();
+    addAct(`💾 Guardado: ${curFile}`, 'ok');
+  } catch(e) { addAct(`❌ Error guardando: ${e.message}`, 'err'); }
 }
 
-function updateCounts(){
-  document.getElementById('cnt-vault').textContent=allPoints.filter(p=>p.type==='vault').length;
-  document.getElementById('cnt-mem').textContent=allPoints.filter(p=>p.type==='memory').length;
-  document.getElementById('cnt-task').textContent=allPoints.filter(p=>p.type==='task').length;
+function downloadFile() {
+  if(!curFile) return;
+  const blob = new Blob([document.getElementById('file-editor-area').value], {type:'text/plain'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download = curFile.split('/').pop(); a.click();
 }
 
-const COLS={vault:'#00ffff',memory:'#ff00ff',task:'#00ff88',new:'#ffff00'};
+async function deleteFile() {
+  if(!curFile || !confirm('¿Eliminar '+curFile+'?')) return;
+  await fetch(API+'/api/file/delete?path='+encodeURIComponent(curFile), {method:'DELETE'}).catch(()=>{});
+  addAct(`🗑 Eliminado: ${curFile}`, 'info');
+  curFile = null;
+  document.getElementById('epath').textContent = '← Selecciona un archivo';
+  document.getElementById('file-editor-area').value = '';
+  loadFiles();
+}
 
-function drawLoop(){
-  ctx.fillStyle='rgba(5,5,8,0.18)';
-  ctx.fillRect(0,0,W,H);
+function newFile() {
+  const name = prompt('Nombre del archivo (ej: scripts/nuevo.js):');
+  if(!name) return;
+  curFile = name;
+  document.getElementById('epath').textContent = name;
+  document.getElementById('file-editor-area').value = '';
+  addAct(`➕ Nuevo: ${name}`, 'info');
+}
 
-  // Dibujar zonas cluster
-  Object.entries(clusterPos).forEach(([type,cp])=>{
-    const col=COLS[type]||'#fff';
-    ctx.beginPath();
-    ctx.arc(cp.x,cp.y,100,0,Math.PI*2);
-    ctx.strokeStyle=col+'11';
-    ctx.lineWidth=1;
-    ctx.stroke();
-    ctx.fillStyle=col+'05';
-    ctx.fill();
-    ctx.fillStyle=col+'33';
-    ctx.font='9px monospace';
-    ctx.letterSpacing='2px';
-    ctx.fillText(CLUSTERS[type]?.label||type, cp.x-20, cp.y-105);
-  });
+// ── TERMINAL ──────────────────────────────────────────────
+function addTerm(text, color='#00e5ff') {
+  const out = document.getElementById('term-out');
+  const div = document.createElement('div');
+  div.className='tline';
+  div.innerHTML=`<span class="ttime">${new Date().toLocaleTimeString()}</span><span class="ttext" style="color:${color}">${text}</span>`;
+  out.appendChild(div);
+  out.scrollTop=out.scrollHeight;
+}
 
-  // Mover puntos
-  allPoints.forEach(p=>{
-    p.x+=p.vx; p.y+=p.vy;
-    const cp=clusterPos[p.type]||{x:W/2,y:H/2};
-    const dx=cp.x-p.x, dy=cp.y-p.y;
-    p.vx+=dx*.0005; p.vy+=dy*.0005;
-    p.vx*=.99; p.vy*=.99;
-    if(p.glow>0) p.glow=Math.max(0,p.glow-.008);
-  });
+function termKey(e) {
+  if(e.key==='Enter') { sendTerm(); return; }
+  if(e.key==='ArrowUp') { termIdx=Math.min(termIdx+1,termHistory.length-1); e.target.value=termHistory[termIdx]||''; }
+  if(e.key==='ArrowDown') { termIdx=Math.max(termIdx-1,-1); e.target.value=termIdx>=0?termHistory[termIdx]:''; }
+}
 
-  // Conexiones dentro del mismo cluster
-  for(let i=0;i<allPoints.length;i++){
-    for(let j=i+1;j<allPoints.length;j++){
-      if(allPoints[i].type!==allPoints[j].type) continue;
-      const d=Math.hypot(allPoints[i].x-allPoints[j].x,allPoints[i].y-allPoints[j].y);
-      if(d<60){
-        const col=COLS[allPoints[i].type]||'#fff';
-        ctx.strokeStyle=col+Math.floor((1-d/60)*25).toString(16).padStart(2,'0');
-        ctx.lineWidth=.5;
-        ctx.beginPath();ctx.moveTo(allPoints[i].x,allPoints[i].y);ctx.lineTo(allPoints[j].x,allPoints[j].y);ctx.stroke();
-      }
-    }
+async function sendTerm() {
+  const inp = document.getElementById('term-in');
+  const text = inp.value.trim(); if(!text) return;
+  termHistory.unshift(text); termIdx=-1; inp.value='';
+  addTerm(text, '#00ff9d');
+  const wait = document.createElement('div'); wait.className='tline';
+  wait.innerHTML='<span class="ttime">...</span><span class="ttext" style="color:rgba(0,229,255,.3)">Procesando...</span>';
+  document.getElementById('term-out').appendChild(wait);
+  setBMOState('thinking');
+  try {
+    const res = await fetch(API+'/api/exec', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:`bmo_query:${text}`})});
+    const data = await res.json();
+    wait.remove();
+    const out = data.output || data.error || 'Sin respuesta';
+    addTerm(out, data.error?'#ff3d5a':'#00e5ff');
+    addAct(`💬 ${text.slice(0,50)}`, 'info');
+    if(speakOn) speak(out.slice(0,200));
+    setBMOState('ok');
+  } catch(e) {
+    wait.remove();
+    addTerm('Error de conexión: '+e.message, '#ff3d5a');
+    setBMOState('idle');
   }
-
-  // Animaciones activas
-  animations=animations.filter(a=>a.progress<1);
-  animations.forEach(a=>{
-    a.progress+=a.speed;
-    const t=a.progress;
-    const x=a.x0+(a.x1-a.x0)*t;
-    const y=a.y0+(a.y1-a.y0)*t;
-    if(a.type==='search'){
-      // Rayo cian viajando
-      ctx.strokeStyle=`rgba(0,255,255,${1-t})`;
-      ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(a.x0,a.y0);ctx.lineTo(x,y);ctx.stroke();
-      // Cabeza brillante
-      const g=ctx.createRadialGradient(x,y,0,x,y,15);
-      g.addColorStop(0,'rgba(0,255,255,.8)');g.addColorStop(1,'rgba(0,255,255,0)');
-      ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-    } else if(a.type==='save'){
-      // Partícula rosa cayendo al cluster
-      ctx.strokeStyle=`rgba(255,0,255,${.8*(1-t)})`;
-      ctx.lineWidth=1.5;
-      ctx.setLineDash([4,4]);
-      ctx.beginPath();ctx.moveTo(a.x0,a.y0);ctx.lineTo(x,y);ctx.stroke();
-      ctx.setLineDash([]);
-      const g=ctx.createRadialGradient(x,y,0,x,y,12);
-      g.addColorStop(0,'rgba(255,0,255,.9)');g.addColorStop(1,'rgba(255,0,255,0)');
-      ctx.beginPath();ctx.arc(x,y,12,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-      // Destello al llegar
-      if(t>.9){
-        ctx.beginPath();ctx.arc(a.x1,a.y1,20*(t-.9)*10,0,Math.PI*2);
-        ctx.strokeStyle='rgba(255,0,255,'+(1-(t-.9)*10)+')';ctx.lineWidth=2;ctx.stroke();
-      }
-    }
-  });
-
-  // Puntos
-  allPoints.forEach(p=>{
-    const col=p.isNew?COLS.new:COLS[p.type]||'#fff';
-    const r=p.r;
-    if(p.glow>0){
-      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*5);
-      g.addColorStop(0,col+Math.floor(p.glow*200).toString(16).padStart(2,'0'));
-      g.addColorStop(1,col+'00');
-      ctx.beginPath();ctx.arc(p.x,p.y,r*5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-    }
-    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
-  });
-
-  requestAnimationFrame(drawLoop);
+  setTimeout(()=>setBMOState('idle'), 2000);
 }
 
-function setupTooltip(canvas){
-  const tip=document.getElementById('tooltip');
-  canvas.onmousemove=e=>{
-    const rect=canvas.getBoundingClientRect();
-    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-    const p=allPoints.find(p=>Math.hypot(p.x-mx,p.y-my)<p.r+8);
-    if(p){
-      tip.style.display='block';
-      tip.style.left=Math.min(mx+12,W-220)+'px';
-      tip.style.top=Math.max(my-40,5)+'px';
-      tip.innerHTML=`<span style="color:${COLS[p.type]}">[${p.type}]</span> ${p.label}<br><span style="opacity:.7">${String(p.content||'').slice(0,100)}</span>`;
-    } else tip.style.display='none';
+// ── CODE ──────────────────────────────────────────────────
+function codeTab(e) {
+  if(e.key==='Tab'){e.preventDefault();const s=e.target.selectionStart;e.target.value=e.target.value.substring(0,s)+'  '+e.target.value.substring(e.target.selectionEnd);e.target.selectionStart=e.target.selectionEnd=s+2;}
+}
+async function runCode() {
+  const code=document.getElementById('code-in').value, lang=document.getElementById('clang').value;
+  document.getElementById('code-out').textContent='Ejecutando...';
+  document.getElementById('code-out').style.color='#ffe600';
+  try {
+    const res=await fetch(API+'/api/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:`ejecutar_codigo:${lang}:${btoa(unescape(encodeURIComponent(code)))}`})});
+    const d=await res.json();
+    document.getElementById('code-out').style.color=d.error?'#ff3d5a':'#00ff9d';
+    document.getElementById('code-out').textContent=d.output||d.error||'Sin salida';
+  } catch(e){document.getElementById('code-out').style.color='#ff3d5a';document.getElementById('code-out').textContent='Error: '+e.message;}
+}
+async function saveCode() {
+  const code=document.getElementById('code-in').value, filename=document.getElementById('cfile').value||'script.js';
+  await fetch(API+'/api/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:`guardar_archivo:${filename}:${btoa(unescape(encodeURIComponent(code)))}`})}).catch(()=>{});
+  addAct(`💾 Código guardado: ${filename}`,'ok');
+}
+async function aiCode() {
+  const p=prompt('¿Qué código quieres que genere BMO?'); if(!p) return;
+  setBMOState('thinking');
+  document.getElementById('code-out').textContent='BMO escribiendo código...'; document.getElementById('code-out').style.color='#ffe600';
+  try {
+    const res=await fetch(API+'/api/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:`generar_codigo:${document.getElementById('clang').value}:${p}`})});
+    const d=await res.json();
+    if(d.output) document.getElementById('code-in').value=d.output;
+    document.getElementById('code-out').textContent='✅ Código generado'; document.getElementById('code-out').style.color='#00ff9d';
+  } catch(e){document.getElementById('code-out').textContent='Error: '+e.message;}
+  setBMOState('idle');
+}
+function clearCode(){document.getElementById('code-in').value='';document.getElementById('code-out').textContent='Listo...';document.getElementById('code-out').style.color='#00ff9d';}
+
+// ── BACKUP ────────────────────────────────────────────────
+function blogLine(text, color='rgba(0,229,255,.6)') {
+  const log = document.getElementById('backup-log');
+  log.innerHTML += `<span style="color:${color}">[${new Date().toLocaleTimeString()}] ${text}</span>\n`;
+  log.scrollTop = log.scrollHeight;
+}
+
+async function doBackup(type) {
+  blogLine(`Iniciando backup: ${type}...`, '#ffe600');
+  const cmds = {
+    full: `tar -czf /tmp/bmo_backup_${Date.now()}.tar.gz -C /home/ruben wa-ollama --exclude=wa-ollama/node_modules --exclude=wa-ollama/auth_session 2>&1 && echo "OK: backup en /tmp"`,
+    db: `cp /home/ruben/wa-ollama/memory/bmo_memory.db /tmp/bmo_db_${Date.now()}.db && echo "OK: DB guardada en /tmp"`,
+    config: `cp /home/ruben/wa-ollama/.env /tmp/bmo_env_${Date.now()}.env && echo "OK: Config guardada"`
   };
-  canvas.onmouseleave=()=>tip.style.display='none';
+  try {
+    const res = await fetch(API+'/api/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:cmds[type]||`echo "Tipo desconocido: ${type}"`})});
+    const d = await res.json();
+    blogLine(d.output||d.error||'Completado', d.error?'#ff3d5a':'#00ff9d');
+    addAct(`📦 Backup ${type} completado`,'ok');
+  } catch(e){blogLine('Error: '+e.message,'#ff3d5a');}
 }
 
-// Animación de BÚSQUEDA (rayo desde centro al cluster)
-function animSearch(targetType, label){
-  const cp=clusterPos[targetType]||{x:W/2,y:H/2};
-  animations.push({type:'search',x0:W/2,y0:H/2,x1:cp.x,y1:cp.y,progress:0,speed:.025});
-  addEvent(`🔍 Buscando en ${targetType}: ${label}`, 'search');
-  document.getElementById('vec-status').textContent=`Buscando en ${targetType.toUpperCase()}...`;
+async function listBackups() {
+  blogLine('Listando backups en /tmp...', '#00e5ff');
+  try {
+    const res = await fetch(API+'/api/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:'ls -lh /tmp/bmo_*.tar.gz /tmp/bmo_*.db /tmp/bmo_*.env 2>/dev/null || echo "No hay backups"'})});
+    const d = await res.json();
+    blogLine(d.output||'Sin backups','#00ff9d');
+  } catch(e){blogLine('Error: '+e.message,'#ff3d5a');}
 }
 
-// Animación de GUARDADO (desde arriba hacia cluster)
-function animSave(targetType, label){
-  const cp=clusterPos[targetType]||{x:W/2,y:H/2};
-  animations.push({type:'save',x0:cp.x+(Math.random()-.5)*100,y0:30,x1:cp.x+(Math.random()-.5)*50,y1:cp.y+(Math.random()-.5)*50,progress:0,speed:.018});
-  addEvent(`💾 Guardando en ${targetType}: ${label}`, 'save');
-  document.getElementById('vec-status').textContent=`Guardando en ${targetType.toUpperCase()}...`;
-  // Agregar nodo nuevo
-  setTimeout(()=>{
-    const cp2=clusterPos[targetType]||{x:W/2,y:H/2};
-    const a=Math.random()*Math.PI*2, r=20+Math.random()*70;
-    allPoints.push({x:cp2.x+Math.cos(a)*r, y:cp2.y+Math.sin(a)*r, vx:(Math.random()-.5)*.2, vy:(Math.random()-.5)*.2, type:targetType, label, content:label, r:8, glow:1, isNew:true});
-    updateCounts();
-  }, 1500);
+async function cleanTmp() {
+  if(!confirm('¿Limpiar archivos temporales de /tmp?')) return;
+  blogLine('Limpiando /tmp...','#ffe600');
+  try {
+    const res = await fetch(API+'/api/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cmd:'find /tmp -name "bmo_*" -mmin +60 -delete && echo "Limpieza completada"'})});
+    const d = await res.json();
+    blogLine(d.output||'Listo','#00ff9d');
+  } catch(e){blogLine('Error: '+e.message,'#ff3d5a');}
 }
 
-function addEvent(text, type){
-  const feed=document.getElementById('event-feed');
-  const div=document.createElement('div');
-  div.className=`event-item ${type}`;
-  div.innerHTML=`<span style="opacity:.5;font-size:.85em">${new Date().toLocaleTimeString()}</span><br>${text}`;
+// ── ACTIVITY LOG ──────────────────────────────────────────
+function addAct(text, cls='info') {
+  const feed = document.getElementById('act-feed');
+  const div = document.createElement('div');
+  div.className=`act-item ${cls}`;
+  div.innerHTML=`<span class="act-ts">${new Date().toLocaleTimeString()}</span>${text}`;
   feed.insertBefore(div, feed.firstChild);
   if(feed.children.length>20) feed.lastChild.remove();
-  document.getElementById('vec-ts').textContent=new Date().toLocaleTimeString();
 }
 
-// POLLING en tiempo real
-async function pollEvents(){
-  try{
-    const d=await fetch(API+'/api/events').then(r=>r.json());
-    const recent=d.recent||[], tasks=d.tasks||[];
-    const newest=recent.filter(r=>r.timestamp>prevEventTs);
-    if(newest.length && prevEventTs>0 && vecReady){
-      newest.forEach(r=>{
-        const tipo=r.tipo||'';
-        if(/aprendizaje|herramienta|sesion/i.test(tipo)){
-          animSave('memory', String(r.contenido||'').slice(0,40));
-        } else {
-          animSearch('memory', String(r.contenido||'').slice(0,40));
-        }
-      });
-    }
-    if(recent.length) prevEventTs=Math.max(...recent.map(r=>r.timestamp));
-    // Detectar nuevas tareas
-    const newestTasks=tasks.filter(t=>t.timestamp>prevEventTs-5000&&t.timestamp>prevEventTs-60000);
-    if(newestTasks.length&&vecReady){
-      newestTasks.slice(0,1).forEach(t=>{
-        if(t.exito) animSave('task', String(t.objetivo||'').slice(0,40));
-        else animSearch('task', String(t.objetivo||'').slice(0,40));
-      });
-    }
-  }catch(e){}
+// ── VOZ ───────────────────────────────────────────────────
+function speak(text) {
+  if(!speakOn || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text.replace(/[*_#\[\]]/g,''));
+  u.lang='es-MX'; u.rate=1; u.pitch=1.1;
+  const v=speechSynthesis.getVoices().find(v=>v.lang.includes('es'));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
 }
 
-async function pollBrain(){
-  try{
-    const [vault,mem]=await Promise.all([
-      fetch(API+'/api/brain').then(r=>r.json()).catch(()=>[]),
-      fetch(API+'/api/memory').then(r=>r.json()).catch(()=>({}))
-    ]);
-    const lt=mem.long_term||[];
-    if(lt.length>prevLtCount && prevLtCount>0){
-      animSave('memory', lt[0]?.tipo||'nuevo');
-      const panel=document.getElementById('p-brain');
-      if(panel.classList.contains('active')) loadBrain();
-    }
-    if(vault.length>prevVaultCount && prevVaultCount>0){
-      animSave('vault', vault[0]?.source||'nuevo');
-    }
-    prevLtCount=lt.length; prevVaultCount=vault.length;
-  }catch(e){}
+function makeRecognition(onResult) {
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R) return null;
+  const r=new R(); r.lang='es-MX'; r.continuous=false; r.interimResults=false;
+  r.onresult=e=>onResult(e.results[0][0].transcript);
+  r.onerror=()=>{}; r.onend=()=>{};
+  return r;
 }
 
-// INIT
-updateStatus(); updateActivity();
-setInterval(updateStatus,5000);
-setInterval(updateActivity,3000);
-setInterval(pollEvents,2000);
-setInterval(pollBrain,3000);
+function toggleVoice() {
+  if(!recognition) recognition=makeRecognition(t=>{addAct(`🎤 "${t.slice(0,60)}"`, 'info');});
+  if(!recognition) return;
+  if(isListening){recognition.stop();isListening=false;document.getElementById('vbtn').classList.remove('on');document.getElementById('vbtn').textContent='🎤 VOZ';}
+  else{recognition.start();isListening=true;document.getElementById('vbtn').classList.add('on');document.getElementById('vbtn').textContent='🔴 ACTIVO';}
+}
+
+function toggleTermVoice() {
+  if(!tRecognition) tRecognition=makeRecognition(t=>{document.getElementById('term-in').value=t;sendTerm();});
+  if(!tRecognition) return;
+  if(tListening){tRecognition.stop();tListening=false;document.getElementById('tvbtn').classList.remove('on');}
+  else{tRecognition.start();tListening=true;document.getElementById('tvbtn').classList.add('on');}
+}
+
+// ── WEBSOCKET ─────────────────────────────────────────────
+let ws=null;
+function initWS(){
+  const proto=window.location.protocol==='https:'?'wss:':'ws:';
+  ws=new WebSocket(proto+'//'+window.location.host);
+  ws.onopen=()=>{document.getElementById('ws-dot').classList.add('on');document.getElementById('fstat').textContent='🟢 ONLINE';document.getElementById('fstat').className='online';};
+  ws.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.type==='events'){fetchActivity();}}catch(e){}};
+  ws.onclose=()=>{document.getElementById('ws-dot').classList.remove('on');setTimeout(initWS,4000);};
+}
+try{initWS();}catch(e){}
+
+// ── INIT ──────────────────────────────────────────────────
+loadFiles();
+fetchStatus(); fetchActivity();
+setInterval(fetchStatus, 5000);
+setInterval(fetchActivity, 4000);
 </script>
 </body>
 </html>
