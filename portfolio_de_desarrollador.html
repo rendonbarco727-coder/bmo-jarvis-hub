@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio de Desarrollador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .contenedor {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+        }
+        
+        .menu {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .menu li {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .menu a:hover {
+            color: #ccc;
+        }
+        
+        .principal {
+            padding: 20px;
+        }
+        
+        .principal h2 {
+            margin-top: 0;
+        }
+        
+        .principal p {
+            margin-bottom: 20px;
+        }
+        
+        .imagenes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .imagenes img {
+            width: 33.33%;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .imagenes img:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            clear: both;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .imagenes {
+                flex-direction: column;
+            }
+            .imagenes img {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <header class="header">
+            <h1>Portfolio de Desarrollador</h1>
+        </header>
+        <nav class="menu">
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Proyectos</a></li>
+                <li><a href="#">Servicios</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+        </nav>
+        <main class="principal">
+            <h2>Proyectos</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
+            <div class="imagenes">
+                <img src="imagen1.jpg" alt="Imagen 1">
+                <img src="imagen2.jpg" alt="Imagen 2">
+                <img src="imagen3.jpg" alt="Imagen 3">
+            </div>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Desarrollador</p>
+        </footer>
+    </div>
+</body>
+</html>
