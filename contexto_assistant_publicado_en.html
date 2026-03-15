@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio de Desarrollador</title>
+    <style>
+        /* Estilos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            width: calc(33.33% - 20px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card h2 {
+            margin: 10px 0;
+        }
+
+        .card p {
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Portfolio de Desarrollador</h1>
+        </header>
+        <div class="content">
+            <div class="card">
+                <img src="https://picsum.photos/200/300" alt="Imagen 1">
+                <h2>Proyecto 1</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/200/301" alt="Imagen 2">
+                <h2>Proyecto 2</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/200/302" alt="Imagen 3">
+                <h2>Proyecto 3</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
+            </div>
+        </div>
+        <footer class="footer">
+            <p>&copy; 2023 Desarrollador</p>
+        </footer>
+    </div>
+</body>
+</html>
