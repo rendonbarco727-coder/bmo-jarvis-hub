@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio de Desarrollador</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
+        .header nav {
+            margin-top: 20px;
+        }
+
+        .header nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .header nav li {
+            margin-right: 20px;
+        }
+
+        .header nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .main {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main h2 {
+            font-size: 24px;
+            margin-top: 0;
+        }
+
+        .main ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main li {
+            margin-bottom: 10px;
+        }
+
+        .main a {
+            text-decoration: none;
+            color: #337ab7;
+        }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            clear: both;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .header nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .header nav li {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Portfolio de Desarrollador</h1>
+            <nav>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Proyectos</a></li>
+                    <li><a href="#">Sobre mí</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main">
+            <h2>Proyectos Recientes</h2>
+            <ul>
+                <li>
+                    <h3>Proyecto 1</h3>
+                    <p>Descripción del proyecto 1</p>
+                    <a href="#">Ver más</a>
+                </li>
+                <li>
+                    <h3>Proyecto 2</h3>
+                    <p>Descripción del proyecto 2</p>
+                    <a href="#">Ver más</a>
+                </li>
+                <li>
+                    <h3>Proyecto 3</h3>
+                    <p>Descripción del proyecto 3</p>
+                    <a href="#">Ver más</a>
+                </li>
+            </ul>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Desarrollador</p>
+        </footer>
+    </div>
+</body>
+</html>
